@@ -54,7 +54,7 @@ This repository contains my submission for the TRP 1 - MCP Setup Challenge, demo
 
 ## Submission Details
 
-**GitHub Repository:** [To be updated with actual URL]
+**GitHub Repository:** https://github.com/tekleale/trp1-mcp-setup-challenge
 **Status:** Tasks 2 & 3 Complete | Task 1 Blocked (awaiting Tenx MCP server details)
 **Tenx MCP Connection:** Pending configuration (awaiting server details from 10 Academy)
 
