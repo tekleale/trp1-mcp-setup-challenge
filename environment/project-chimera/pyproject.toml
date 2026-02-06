@@ -1,0 +1,90 @@
+[project]
+name = "chimera"
+version = "0.1.0"
+description = "Project Chimera: Autonomous AI Influencer Network - Agentic Infrastructure"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Tekleab Alemayehu", email = "tekleab@example.com" }
+]
+keywords = ["ai-agents", "mcp", "autonomous-influencers", "agentic-infrastructure"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+
+dependencies = [
+    # Core Agent Framework
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+
+    # MCP (Model Context Protocol)
+    "mcp>=1.1.0",
+
+    # Task Queue & State Management
+    "redis>=5.2.0",
+    "hiredis>=3.1.0",
+
+    # API Layer
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+
+    # LLM Integration
+    "litellm>=1.59.0",
+    "anthropic>=0.42.0",
+    "openai>=1.59.0",
+
+    # Agent Orchestration
+    "langgraph>=0.2.60",
+    "langchain-core>=0.3.30",
+
+    # Utilities
+    "python-dotenv>=1.0.0",
+    "httpx>=0.28.0",
+    "tenacity>=9.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+
+    # Linting & Formatting
+    "ruff>=0.8.0",
+    "mypy>=1.14.0",
+
+    # Type Stubs
+    "types-redis>=4.6.0",
+
+    # Development Tools
+    "ipython>=8.31.0",
+    "pre-commit>=4.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "--cov=chimera --cov-report=term-missing"
