@@ -1,0 +1,197 @@
+# CodeRabbit AI Governance Configuration for Project Chimera
+#
+# Purpose:
+#   - Automate code review with AI
+#   - Enforce spec alignment
+#   - Check security vulnerabilities
+#   - Ensure Governor Mode compliance
+#
+# Spec Reference: specs/technical.md, specs/functional.md, specs/_meta.md
+#
+# Trigger: On pull request or push to main
+
+# Language and framework
+language: python
+
+# Review settings
+reviews:
+  # Enable automatic reviews
+  auto_review: true
+  
+  # Review profile
+  profile: strict
+  
+  # Request changes if critical issues found
+  request_changes_workflow: true
+  
+  # High-level instructions for AI reviewer
+  high_level_summary: true
+  
+  # Poem style summary (optional, fun)
+  poem: false
+  
+  # Review effort estimation
+  review_effort: true
+
+# Path-based instructions
+path_instructions:
+  # Specs directory: Never modify without explicit approval
+  - path: "specs/**"
+    instructions: |
+      CRITICAL: Spec files are the source of truth.
+      - NEVER suggest modifications to specs without explicit approval
+      - Flag any code that contradicts specs
+      - Reference spec sections in comments
+  
+  # Source code: Enforce spec alignment
+  - path: "src/chimera/**"
+    instructions: |
+      Enforce strict spec alignment:
+      - Check API contracts match specs/technical.md Section 7
+      - Verify state schemas match specs/technical.md Section 2
+      - Ensure HITL thresholds (0.90/0.70) are hardcoded (NON-NEGOTIABLE)
+      - Validate MCP vs Skills distinction (ADR-005)
+      - Check all agent actions log to Tenx MCP Sense (FR 4.0)
+      - Verify Governor Mode compliance (no real executions in stubs)
+  
+  # Tests: Validate TDD compliance
+  - path: "tests/**"
+    instructions: |
+      Validate TDD compliance:
+      - Governor tests MUST fail initially (TDD goalposts)
+      - All tests must have comprehensive docstrings
+      - Mock all external dependencies (LLM, MCP, Redis, HTTP)
+      - Check spec references in test docstrings
+      - Verify test naming convention: test_<function>_<scenario>
+  
+  # API endpoints: Enforce contract compliance
+  - path: "src/chimera/api/**"
+    instructions: |
+      Enforce API contract compliance:
+      - Validate request/response schemas match specs/technical.md Section 7
+      - Check HTTP status codes are correct
+      - Verify error handling matches spec
+      - Ensure HITL routing logic is correct (Tier 1/2/3)
+  
+  # MCP integration: Validate error handling
+  - path: "src/chimera/mcp/**"
+    instructions: |
+      Validate MCP integration:
+      - Check retry logic for transient errors (3 attempts, exponential backoff)
+      - Verify timeout enforcement (5-300 seconds)
+      - Ensure error classification (retryable vs permanent)
+      - Validate Tenx Sense logging for all MCP calls
+  
+  # Persistence: Validate state management
+  - path: "src/chimera/persistence/**"
+    instructions: |
+      Validate state management:
+      - Check TTL policies (24 hours for all entities)
+      - Verify Optimistic Concurrency Control (OCC) implementation
+      - Ensure Redis key schema matches spec
+      - Validate error handling (connection errors, version conflicts)
+
+# Security checks
+security:
+  # Enable security scanning
+  enabled: true
+  
+  # Security rules
+  rules:
+    # Check for hardcoded secrets
+    - name: no-hardcoded-secrets
+      severity: critical
+      message: "Hardcoded secrets detected. Use environment variables."
+    
+    # Check for SQL injection vulnerabilities
+    - name: no-sql-injection
+      severity: critical
+      message: "Potential SQL injection vulnerability detected."
+    
+    # Check for insecure dependencies
+    - name: check-dependencies
+      severity: high
+      message: "Insecure dependency detected. Update to latest version."
+    
+    # Check for insecure random number generation
+    - name: secure-random
+      severity: medium
+      message: "Use secrets module for cryptographic random numbers."
+
+# Code quality checks
+quality:
+  # Enable code quality checks
+  enabled: true
+  
+  # Quality rules
+  rules:
+    # Check for missing docstrings
+    - name: require-docstrings
+      severity: medium
+      message: "Missing docstring. All classes and functions must have docstrings."
+    
+    # Check for long functions
+    - name: max-function-length
+      severity: low
+      max_lines: 50
+      message: "Function too long. Consider breaking into smaller functions."
+    
+    # Check for complex functions
+    - name: max-complexity
+      severity: medium
+      max_complexity: 10
+      message: "Function too complex. Simplify logic or break into smaller functions."
+    
+    # Check for unused imports
+    - name: no-unused-imports
+      severity: low
+      message: "Unused import detected. Remove to keep code clean."
+
+# Spec alignment checks (custom)
+custom_checks:
+  # HITL threshold enforcement
+  - name: hitl-thresholds
+    pattern: "confidence.*0\\.(9[0-9]|[0-6][0-9])"
+    message: |
+      CRITICAL: HITL thresholds are NON-NEGOTIABLE.
+      - Tier 1 (auto-approve): confidence > 0.90
+      - Tier 2 (human review): 0.70 ≤ confidence ≤ 0.90
+      - Tier 3 (auto-reject): confidence < 0.70
+      Reference: specs/_meta.md Section 3.2
+  
+  # MCP vs Skills distinction
+  - name: mcp-skills-distinction
+    pattern: "class.*Skill.*mcp_client"
+    message: |
+      CRITICAL: Skills must NOT have MCP client (ADR-005).
+      Skills are internal capabilities, MCP tools are external integrations.
+      Reference: research/tooling_strategy.md (ADR-005)
+  
+  # Tenx Sense logging
+  - name: tenx-sense-logging
+    pattern: "mcp_client\\.call_tool"
+    message: |
+      Verify Tenx Sense logging for traceability (FR 4.0).
+      All MCP calls must log to tenx_sense.log_action().
+      Reference: specs/functional.md Section 4.0
+
+# Ignore patterns
+ignore:
+  # Ignore generated files
+  - "**/__pycache__/**"
+  - "**/*.pyc"
+  - "**/.pytest_cache/**"
+  - "**/htmlcov/**"
+  
+  # Ignore third-party code
+  - "**/venv/**"
+  - "**/.venv/**"
+  - "**/node_modules/**"
+
+# Governor Mode Compliance:
+# ✅ Enforces spec alignment
+# ✅ Checks security vulnerabilities
+# ✅ Validates TDD compliance
+# ✅ Ensures Governor Mode compliance (no real executions)
+# ✅ All rules documented with spec references
+

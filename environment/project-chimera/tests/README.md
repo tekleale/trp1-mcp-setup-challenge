@@ -44,6 +44,9 @@ tests/
 │   └── test_api_judge.py   # Judge API tests
 ├── orchestration/          # State machine tests
 │   └── test_langgraph_state.py # LangGraph tests
+├── governor/               # TDD failing tests (Day 3)
+│   ├── test_trend_fetcher.py # Trend fetching TDD goalposts
+│   └── test_skills_interface.py # Skills interface TDD goalposts
 └── README.md               # This file
 ```
 
@@ -154,6 +157,53 @@ def test_hitl_interrupt():
 
 **Key Tests:**
 - `test_langgraph_state.py`: State transitions, HITL interrupts, invalid transitions
+
+---
+
+### 5. Governor Tests (`tests/governor/`) - TDD Failing Tests
+
+**Purpose:** Define "empty slots" for AI agent implementation using TDD
+
+**TDD Strategy:**
+- All tests MUST FAIL on first run (TDD goalposts)
+- Tests define expected behavior before implementation
+- Success is defined as the test failing with "not yet implemented - TDD goalpost"
+
+**Mock Strategy:**
+- Mock all dependencies (even though tests will fail)
+- Define expected interfaces and contracts
+- Document expected inputs/outputs in docstrings
+
+**Example:**
+```python
+def test_fetch_trends_returns_correct_structure(self, trend_fetcher):
+    """
+    Test that fetch_trends() returns data matching API contract.
+
+    Expected Outputs:
+        - trends: List[dict] with topic, volume, sentiment, timestamp
+        - metadata: dict with platform, location, timeframe
+
+    Failure Modes:
+        - MUST FAIL: TrendFetcher.fetch_trends() not yet implemented
+    """
+    pytest.fail("fetch_trends() method not yet implemented - TDD goalpost")
+```
+
+**Key Tests:**
+- `test_trend_fetcher.py`: Trend data structure, MCP timeout handling, platform validation, Tenx Sense logging, rate limits
+- `test_skills_interface.py`: Skill registry, parameter validation, execution output, MCP vs Skills distinction, schema introspection
+
+**TDD Verification:**
+```bash
+# Run governor tests - all should FAIL
+make test
+
+# Expected output:
+# FAILED test_trend_fetcher.py::TestTrendFetcher::test_fetch_trends_returns_correct_structure
+# FAILED test_trend_fetcher.py::TestTrendFetcher::test_fetch_trends_handles_mcp_timeout
+# ... (all tests fail with "not yet implemented - TDD goalpost")
+```
 
 ---
 
