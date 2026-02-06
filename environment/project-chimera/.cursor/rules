@@ -1,0 +1,1365 @@
+# Project Chimera: AI Agent Governance Rules
+
+**Version:** 1.0.0  
+**Effective Date:** 2026-02-06  
+**Authority:** Spec-Driven Development (SDD) Methodology  
+**Enforcement:** MANDATORY for all AI agents (Cursor, Claude, GitHub Copilot, etc.)
+
+---
+
+## 1. Project Identity & Context
+
+**What is Project Chimera:**
+- Autonomous AI Influencer Network infrastructure
+- Mission: Build agents that research trends, generate content, and manage engagement autonomously
+- Architecture: Planner-Worker-Judge pattern (FastRender Swarm)
+- Key Technologies: MCP (Model Context Protocol), LangGraph, Redis, LiteLLM, Pydantic
+- Current Phase: Day 2-3 prototype (foundational infrastructure only)
+- Timeline: 3-day challenge (Feb 6-7, 2026)
+
+**Critical Context:**
+- This is a COMPETITION submission for Forward Deployed Engineer (FDE) role
+- Quality and spec compliance are MORE important than feature completeness
+- Traceability to Tenx MCP Sense is MANDATORY (FR 4.0 in SRS)
+- Human-in-the-Loop (HITL) is NON-NEGOTIABLE (NFR 1.1, NFR 1.2 in SRS)
+
+---
+
+## 2. Prime Directive: Spec-First Development
+
+### 🚨 ABSOLUTE RULE 🚨
+
+**NEVER generate or modify implementation code without first checking the relevant files in `specs/`.**
+
+**What this means:**
+- Before writing ANY code, read the corresponding section in `specs/functional.md` or `specs/technical.md`
+- Before modifying ANY code, verify the change aligns with specs
+- Before adding ANY feature, confirm it exists in specs
+- Before changing ANY behavior, check if specs allow it
+
+**Violations are UNACCEPTABLE:**
+- ❌ "I'll add this helpful utility function" → NO, check specs first
+- ❌ "I'll improve this error message" → NO, check specs first
+- ❌ "I'll optimize this algorithm" → NO, check specs first
+- ❌ "I'll add better logging" → NO, check specs first
+
+**The ONLY acceptable workflow:**
+1. Human requests a change
+2. AI reads relevant spec section
+3. AI explains implementation plan referencing spec
+4. AI waits for human confirmation
+5. AI implements EXACTLY what was approved
+6. AI references spec section in code comments and commit message
+
+---
+
+## 3. Mandatory Workflow for Code Changes
+
+### Step-by-Step Process (NO SHORTCUTS ALLOWED)
+
+**Step 1: Read Relevant Spec Section**
+```
+Example:
+"I need to implement the Planner agent. Let me read specs/technical.md Section 3.1 (Node Definitions)."
+```
+
+**Step 2: Explain Implementation Plan**
+```
+Example:
+"Based on specs/technical.md Section 3.1, I will:
+1. Create src/chimera/agents/planner.py
+2. Implement planner_node(state: GlobalState) -> GlobalState
+3. Use LiteLLM to call PLANNER_MODEL (claude-3-5-sonnet-20241022)
+4. Parse LLM output into TaskQueue schema
+5. Update state.task_queue and return state
+
+This aligns with specs/functional.md Section 2.1 (Planner Agent input/output contracts)."
+```
+
+**Step 3: Wait for Human Confirmation**
+```
+"Do you approve this implementation plan? Type PROCEED to continue."
+```
+
+**Step 4: Implement Exactly What Was Approved**
+- No additions, no "improvements", no "while I'm here" changes
+- If you discover the plan was wrong, STOP and ask for new approval
+
+**Step 5: Reference Spec Version in Commit Message**
+```
+Example:
+git commit -m "feat: implement Planner agent (specs/technical.md v0.1.0 Section 3.1)
+
+- Create planner_node function
+- Integrate LiteLLM for task decomposition
+- Validate output against TaskQueue schema
+- Refs: specs/functional.md Section 2.1"
+```
+
+---
+
+## 4. Spec Authority & Hierarchy
+
+### Authority Ranking (Highest to Lowest)
+
+1. **`specs/` directory** (ABSOLUTE AUTHORITY)
+   - `specs/technical.md` → implementation contracts
+   - `specs/functional.md` → behavioral contracts
+   - `specs/_meta.md` → ADRs, governance, constraints
+
+2. **SRS Document** (REQUIREMENTS AUTHORITY)
+   - `research/Project Chimera SRS Document_*.txt`
+   - Defines business requirements
+   - Specs implement SRS requirements
+
+3. **Code Comments** (IMPLEMENTATION NOTES)
+   - Explain "how" but never override "what"
+
+4. **AI Assumptions** (LOWEST AUTHORITY)
+   - AI suggestions are ALWAYS subordinate to specs
+   - When in doubt, specs win
+
+### Conflict Resolution Rules
+
+**If spec conflicts with SRS:**
+- STOP immediately
+- Ask human: "I found a conflict between specs/technical.md Section X and SRS Section Y. Which should I follow?"
+- Do NOT proceed until resolved
+
+**If code conflicts with spec:**
+- Spec wins, update code
+- Example: "The current code uses gpt-4, but specs/technical.md Section 6.1 specifies claude-3-5-sonnet-20241022. I will update the code."
+
+**If test conflicts with spec:**
+- Spec wins, update test
+- Example: "The test expects confidence threshold 0.80, but specs/functional.md Section 2.3 specifies 0.90. I will update the test."
+
+**If AI suggestion conflicts with spec:**
+- Spec wins, discard suggestion
+- Example: "I was going to suggest using asyncio.gather for parallel execution, but specs/technical.md Section 3 doesn't mention parallelism. I will implement sequential execution as specified."
+
+### How to Handle Spec Ambiguity
+
+**If spec is unclear:**
+- STOP immediately
+- Ask human: "specs/technical.md Section X says Y, but I'm unclear if this means Z. Can you clarify?"
+- Do NOT make assumptions
+
+**If spec is missing:**
+- STOP immediately
+- Ask human: "I need to implement X, but I don't see it in specs/. Should I propose a spec addition first?"
+- Do NOT implement without spec
+
+### How to Propose Spec Changes
+
+**NEVER change specs without explicit human approval.**
+
+**Correct process:**
+1. Identify the issue: "specs/technical.md Section 6.3 specifies max_tokens=1000, but this is insufficient for complex planning tasks."
+2. Propose spec change: "I recommend updating specs/technical.md Section 6.3 to max_tokens=2000. Shall I draft a spec update?"
+3. Wait for approval
+4. Update spec FIRST
+5. Then update code to match new spec
+
+**Incorrect process:**
+- ❌ Changing code and saying "I'll update the spec later"
+- ❌ Changing code and saying "This is a minor deviation"
+- ❌ Changing code and saying "The spec was obviously wrong"
+
+### Immutability Rule
+
+**Once implementation begins, specs are immutable until explicitly versioned.**
+
+- If you're implementing specs v0.1.0, you CANNOT change specs mid-implementation
+- If specs need to change, create v0.2.0 and restart implementation
+- This prevents moving targets and ensures traceability
+
+---
+
+## 5. File-Level Permissions
+
+### READ-ONLY Files (AI CANNOT modify without explicit approval)
+
+**Specs:**
+- `specs/_meta.md`
+- `specs/functional.md`
+- `specs/technical.md`
+
+**Configuration Templates:**
+- `.env.example`
+- `.gitignore`
+- `pyproject.toml` (metadata sections: name, version, description)
+
+**Documentation:**
+- `README.md` (until Day 3)
+- Any `*.md` files in root directory
+
+### WRITE-ALLOWED Files (AI can modify following workflow)
+
+**Implementation:**
+- `src/chimera/**/*.py`
+- `tests/**/*.py`
+
+**Configuration (with validation):**
+- `pyproject.toml` (dependencies section only, using package managers)
+
+### FORBIDDEN Files (AI MUST NEVER create, read, or modify)
+
+**Secrets:**
+- `.env`
+- `.env.local`
+- `secrets/`
+- `*.key`
+- `*.pem`
+- `mcp_credentials.json`
+- `tenx_api_key.txt`
+
+**If AI needs secret values:**
+- Reference environment variables: `os.getenv("TENX_API_KEY")`
+- NEVER hardcode: `api_key = "sk-1234..."` ← FORBIDDEN
+
+### Git Commit Rules
+
+**Conventional Commits (MANDATORY):**
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat:` - New feature (implements spec section)
+- `fix:` - Bug fix (corrects spec violation)
+- `docs:` - Documentation (specs, README)
+- `test:` - Test addition/modification
+- `refactor:` - Code restructuring (no behavior change)
+- `chore:` - Maintenance (dependencies, tooling)
+
+**MUST include spec reference:**
+```
+feat(planner): implement task decomposition (specs/technical.md v0.1.0 §3.1)
+
+- Create planner_node function
+- Integrate LiteLLM with claude-3-5-sonnet-20241022
+- Validate output against TaskQueue schema
+
+Refs: specs/functional.md §2.1
+```
+
+---
+
+## 6. Implementation Constraints
+
+### 6.1 Pydantic Schemas (specs/technical.md Section 2)
+
+**ABSOLUTE RULES:**
+- Schemas MUST match specs/technical.md Section 2 EXACTLY
+- Field names, types, defaults, descriptions MUST be identical
+- Validation rules (min_length, ge, le) MUST be implemented
+- No additional fields without spec update
+- No removing fields without spec update
+- No changing field types without spec update
+
+**Example - CORRECT:**
+```python
+# specs/technical.md Section 2.1 specifies:
+class GlobalState(BaseModel):
+    session_id: str = Field(..., description="Unique session identifier")
+    goal: str = Field(..., min_length=10, max_length=500)
+    # ... exactly as specified
+```
+
+**Example - INCORRECT:**
+```python
+# ❌ Added field not in spec
+class GlobalState(BaseModel):
+    session_id: str
+    goal: str
+    user_id: str  # ← NOT IN SPEC, FORBIDDEN
+```
+
+**Validation Testing (MANDATORY):**
+- Every schema MUST have a test file
+- Test valid inputs (should pass)
+- Test invalid inputs (should raise ValidationError)
+- Test edge cases (min/max lengths, boundary values)
+
+---
+
+### 6.2 LangGraph State Machine (specs/technical.md Section 3)
+
+**Node Implementation Rules:**
+- Nodes MUST match specs/technical.md Section 3.1 exactly
+- Function signature: `def node_name(state: GlobalState) -> GlobalState`
+- MUST read from state, MUST return updated state
+- NO side effects outside state updates (except logging to Tenx Sense)
+
+**Edge Condition Rules:**
+- Edges MUST match specs/technical.md Section 3.2 exactly
+- Function signature: `def should_*(state: GlobalState) -> str`
+- MUST return one of the specified edge labels
+- NO additional logic beyond what spec specifies
+
+**HITL Interrupts (NON-NEGOTIABLE):**
+```python
+# specs/technical.md Section 3.3 specifies interrupt_before=["human_review"]
+app = graph.compile(
+    checkpointer=checkpointer,
+    interrupt_before=["human_review"]  # ← REQUIRED, CANNOT REMOVE
+)
+```
+
+**If you're tempted to skip HITL:**
+- ❌ "HITL slows down testing" → NO, use mocks in tests
+- ❌ "HITL isn't needed for this task" → NO, spec says it's required
+- ❌ "I'll add a flag to disable HITL" → NO, spec doesn't allow this
+
+---
+
+### 6.3 MCP Integration (specs/technical.md Section 5)
+
+**ABSOLUTE RULES:**
+- ONLY call MCP servers defined in specs/technical.md Section 5.1
+- ALL MCP calls MUST log to Tenx Sense (FR 4.0 in SRS)
+- NO direct API calls outside MCP (no `requests.get()`, no `httpx.post()`)
+- ALL MCP calls MUST include error handling per specs/technical.md Section 5.4
+
+**Allowed MCP Servers (Phase 1):**
+1. Tenx MCP Sense (`tenxfeedbackanalytics`)
+   - Purpose: Traceability and logging
+   - Required for ALL agent actions
+
+**Forbidden Actions:**
+- ❌ `requests.post("https://api.twitter.com/...")` → Use MCP server instead
+- ❌ `openai.ChatCompletion.create(...)` → Use LiteLLM instead
+- ❌ Skipping Tenx Sense logging → MANDATORY per FR 4.0
+
+**Error Handling (MANDATORY):**
+```python
+# specs/technical.md Section 5.4 specifies retry logic
+try:
+    result = await mcp_client.call_tool("tenx_log_action", params)
+except NetworkError:
+    # Retry with exponential backoff (specified in spec)
+    await asyncio.sleep(2)
+    result = await mcp_client.call_tool("tenx_log_action", params)
+except AuthError:
+    # Fail immediately, alert operator (specified in spec)
+    logger.error("MCP auth failed")
+    raise
+```
+
+---
+
+### 6.4 LLM Provider Usage (specs/technical.md Section 6)
+
+**Model Selection Matrix (MANDATORY):**
+
+| Agent   | Model                      | Source                          |
+|---------|----------------------------|---------------------------------|
+| Planner | claude-3-5-sonnet-20241022 | specs/technical.md Section 6.1  |
+| Worker  | gemini-2.0-flash-exp       | specs/technical.md Section 6.1  |
+| Judge   | claude-3-5-sonnet-20241022 | specs/technical.md Section 6.1  |
+
+**YOU CANNOT:**
+- ❌ Use gpt-4 for Planner → Spec says claude-3-5-sonnet-20241022
+- ❌ Use claude for Worker → Spec says gemini-2.0-flash-exp
+- ❌ Use different model "because it's better" → Spec is authority
+
+**Token Budget Constraints (MANDATORY):**
+```python
+# specs/technical.md Section 6.3 specifies max_tokens per agent
+response = completion(
+    model="claude-3-5-sonnet-20241022",
+    messages=[...],
+    max_tokens=1000,  # ← FROM SPEC, DO NOT CHANGE
+    temperature=0.7
+)
+```
+
+**Fallback Strategy (MANDATORY):**
+```python
+# specs/technical.md Section 6.4 specifies exact fallback sequence
+try:
+    response = completion(model="claude-3-5-sonnet-20241022", ...)
+except Exception:
+    # Retry once with same model
+    response = completion(model="claude-3-5-sonnet-20241022", ...)
+except Exception:
+    # Fallback to gpt-4o-mini
+    response = completion(model="gpt-4o-mini", ...)
+```
+
+---
+
+## 7. Safety & Security Rules
+
+### Secret Management (ZERO TOLERANCE)
+
+**NEVER commit secrets to version control:**
+- ❌ API keys in code: `ANTHROPIC_API_KEY = "sk-ant-..."`
+- ❌ API keys in comments: `# Use key: sk-ant-...`
+- ❌ API keys in commit messages: `git commit -m "Add key sk-ant-..."`
+- ❌ API keys in test files: `mock_key = "sk-ant-..."`
+
+**ALWAYS use environment variables:**
+```python
+# ✅ CORRECT
+import os
+api_key = os.getenv("ANTHROPIC_API_KEY")
+if not api_key:
+    raise ValueError("ANTHROPIC_API_KEY not set")
+
+# ❌ INCORRECT
+api_key = "sk-ant-api03-..."
+```
+
+**Before EVERY commit:**
+1. Check `git diff` for secrets
+2. Verify `.gitignore` excludes `.env`
+3. Confirm no hardcoded credentials
+
+**Secret Redaction in Logs:**
+```python
+# ✅ CORRECT
+logger.info(f"API call successful", extra={"api_key": "[REDACTED]"})
+
+# ❌ INCORRECT
+logger.info(f"API call with key {api_key}")
+```
+
+### Input Validation (MANDATORY)
+
+**ALL external inputs MUST be validated with Pydantic:**
+```python
+# ✅ CORRECT
+from pydantic import BaseModel, ValidationError
+
+class TaskRequest(BaseModel):
+    goal: str
+    context: dict
+
+try:
+    request = TaskRequest(**user_input)
+except ValidationError as e:
+    return {"error": "Invalid input", "details": e.errors()}
+
+# ❌ INCORRECT
+goal = user_input["goal"]  # No validation, unsafe
+```
+
+**No trust, always verify:**
+- User inputs → Validate with Pydantic
+- LLM outputs → Validate with Pydantic
+- MCP responses → Validate with Pydantic
+- Environment variables → Validate with pydantic-settings
+
+---
+
+## 8. HITL & Confidence Thresholds (NON-NEGOTIABLE)
+
+### The Three-Tier System (specs/functional.md Section 3.1)
+
+**These thresholds are HARDCODED in specs and CANNOT be changed:**
+
+```python
+# ✅ CORRECT - Exactly as specified
+if confidence > 0.90:
+    approved = True
+    requires_human_review = False
+elif 0.70 <= confidence <= 0.90:
+    approved = False
+    requires_human_review = True
+else:  # confidence < 0.70
+    approved = False
+    requires_human_review = False
+
+# ❌ INCORRECT - Changed thresholds
+if confidence > 0.85:  # ← WRONG, spec says 0.90
+    approved = True
+```
+
+**YOU CANNOT:**
+- ❌ Change thresholds "to be more conservative" → Spec says 0.90/0.70
+- ❌ Add a "skip HITL" flag → Not in spec
+- ❌ Auto-approve low confidence "just this once" → Violates spec
+- ❌ Make thresholds configurable → Spec hardcodes them
+
+**If you think thresholds should change:**
+1. STOP implementation
+2. Propose spec change to human
+3. Wait for spec update approval
+4. Update spec FIRST
+5. Then update code
+
+### HITL Timeout (specs/functional.md Section 3.4)
+
+**Default timeout: 24 hours (configurable in .env)**
+
+```python
+# ✅ CORRECT
+timeout_hours = int(os.getenv("HITL_TIMEOUT_HOURS", "24"))
+timeout_at = datetime.utcnow() + timedelta(hours=timeout_hours)
+
+# ❌ INCORRECT
+timeout_at = datetime.utcnow() + timedelta(hours=1)  # Too short, not configurable
+```
+
+**On timeout:**
+- Auto-reject (NOT auto-approve)
+- Log to Tenx Sense
+- Notify reviewer (future feature)
+
+---
+
+## 9. Testing Requirements
+
+### Unit Test Coverage (MANDATORY)
+
+**Every new function requires a unit test:**
+```python
+# src/chimera/agents/planner.py
+def planner_node(state: GlobalState) -> GlobalState:
+    ...
+
+# tests/agents/test_planner.py (REQUIRED)
+def test_planner_node_valid_goal():
+    state = GlobalState(session_id="test", goal="Test goal")
+    result = planner_node(state)
+    assert len(result.task_queue) > 0
+
+def test_planner_node_invalid_goal():
+    state = GlobalState(session_id="test", goal="")
+    with pytest.raises(ValidationError):
+        planner_node(state)
+```
+
+**Every Pydantic schema requires validation tests:**
+```python
+# tests/state/test_schemas.py
+def test_global_state_valid():
+    state = GlobalState(session_id="test", goal="Valid goal here")
+    assert state.status == "planning"
+
+def test_global_state_goal_too_short():
+    with pytest.raises(ValidationError):
+        GlobalState(session_id="test", goal="Hi")  # min_length=10
+```
+
+**Every LangGraph node requires state transition tests:**
+```python
+def test_planner_node_updates_status():
+    state = GlobalState(session_id="test", goal="Test", status="planning")
+    result = planner_node(state)
+    assert result.status == "executing"
+```
+
+### Mock Strategies (MANDATORY)
+
+**Mock ALL LLM calls in tests:**
+```python
+# ✅ CORRECT - No real API calls
+from unittest.mock import patch
+
+@patch('litellm.completion')
+def test_planner_calls_llm(mock_completion):
+    mock_completion.return_value = {
+        "choices": [{"message": {"content": '{"tasks": [...]}'}}]
+    }
+    state = planner_node(GlobalState(...))
+    assert mock_completion.called
+
+# ❌ INCORRECT - Real API call
+def test_planner_calls_llm():
+    state = planner_node(GlobalState(...))  # Calls real Claude API
+```
+
+**Mock ALL MCP calls in tests:**
+```python
+# ✅ CORRECT - Use test double from specs/technical.md Section 9.4
+class MockMCPServer:
+    async def call_tool(self, name, params):
+        if name == "tenx_log_action":
+            return {"logged": True, "trace_id": "mock_trace"}
+        raise ValueError(f"Unknown tool: {name}")
+
+# ❌ INCORRECT - Real MCP call
+async def test_worker_logs_to_tenx():
+    result = await worker_node(state)  # Calls real Tenx Sense
+```
+
+### Test Organization
+
+**Directory structure:**
+```
+tests/
+├── agents/
+│   ├── test_planner.py
+│   ├── test_worker.py
+│   └── test_judge.py
+├── state/
+│   └── test_schemas.py
+├── orchestration/
+│   └── test_langgraph.py
+└── mcp/
+    └── test_client.py
+```
+
+**Naming convention:**
+- Test files: `test_*.py`
+- Test functions: `test_<function_name>_<scenario>()`
+- Test classes: `Test<ClassName>`
+
+---
+
+## 10. Observability & Traceability
+
+### Tenx MCP Sense Logging (MANDATORY - FR 4.0)
+
+**EVERY agent action MUST log to Tenx Sense:**
+
+```python
+# ✅ CORRECT
+async def planner_node(state: GlobalState) -> GlobalState:
+    # Log start
+    await log_to_tenx(
+        session_id=state.session_id,
+        action_type="planner_start",
+        metadata={"goal": state.goal}
+    )
+
+    # Do work
+    result = await plan_tasks(state)
+
+    # Log completion
+    await log_to_tenx(
+        session_id=state.session_id,
+        action_type="planner_complete",
+        metadata={"task_count": len(result.task_queue)}
+    )
+
+    return result
+
+# ❌ INCORRECT - No logging
+async def planner_node(state: GlobalState) -> GlobalState:
+    return await plan_tasks(state)  # Missing Tenx Sense logs
+```
+
+**Action types (specs/technical.md Section 10.1):**
+- `planner_start`, `planner_complete`
+- `worker_start`, `worker_complete`, `worker_retry`
+- `judge_start`, `judge_complete`
+- `hitl_triggered`, `hitl_approved`, `hitl_rejected`
+
+### Structured Logging (MANDATORY)
+
+**Use structlog with JSON format:**
+```python
+# ✅ CORRECT
+import structlog
+logger = structlog.get_logger()
+
+logger.info(
+    "worker_task_complete",
+    session_id=session_id,
+    task_id=task_id,
+    status="success",
+    execution_time=2.34
+)
+
+# ❌ INCORRECT - Unstructured logging
+import logging
+logging.info(f"Task {task_id} completed in 2.34s")
+```
+
+### Tracing Requirements
+
+**Every MCP call MUST include trace_id:**
+```python
+trace_id = str(uuid.uuid4())
+result = await mcp_client.call_tool(
+    "tenx_log_action",
+    {"session_id": session_id, "trace_id": trace_id, ...}
+)
+```
+
+**Every LLM call MUST include session_id:**
+```python
+response = completion(
+    model="claude-3-5-sonnet-20241022",
+    messages=[...],
+    metadata={"session_id": session_id}
+)
+```
+
+**No silent failures:**
+```python
+# ✅ CORRECT
+try:
+    result = await risky_operation()
+except Exception as e:
+    logger.error("operation_failed", error=str(e), session_id=session_id)
+    raise
+
+# ❌ INCORRECT
+try:
+    result = await risky_operation()
+except Exception:
+    pass  # Silent failure, no log
+```
+
+---
+
+## 11. What AI Agents MUST NOT Do
+
+### Forbidden Actions (Immediate Violation)
+
+1. **Generate code without reading specs first**
+   - ❌ "I'll implement the Planner agent" → Read specs/technical.md Section 3.1 first
+
+2. **Add "helpful" features not in specs**
+   - ❌ "I'll add caching to improve performance" → Not in spec
+   - ❌ "I'll add retry logic here" → Check if spec specifies it
+
+3. **Change HITL thresholds**
+   - ❌ `if confidence > 0.85:` → Spec says 0.90
+   - ❌ `HITL_THRESHOLD = 0.80` → Spec hardcodes 0.90/0.70
+
+4. **Skip error handling**
+   - ❌ `result = await mcp_call()` → Must have try/except per spec
+
+5. **Commit secrets**
+   - ❌ `ANTHROPIC_API_KEY = "sk-ant-..."` → Use environment variables
+
+6. **Modify specs without explicit approval**
+   - ❌ Editing specs/technical.md and saying "I fixed a typo" → Ask first
+
+7. **Assume requirements**
+   - ❌ "The spec doesn't mention X, so I'll assume Y" → Ask human
+
+8. **Use deprecated patterns**
+   - ❌ Using `langchain.LLMChain` → Spec says use LiteLLM directly
+
+9. **Optimize prematurely**
+   - ❌ "I'll use asyncio.gather for parallelism" → Not in spec
+
+10. **Add dependencies without updating pyproject.toml**
+    - ❌ `import numpy` → numpy not in pyproject.toml dependencies
+
+11. **Bypass validation**
+    - ❌ `state.goal = user_input["goal"]` → Must use Pydantic validation
+
+12. **Hardcode configuration**
+    - ❌ `REDIS_URL = "redis://localhost:6379"` → Use environment variable
+
+13. **Skip tests**
+    - ❌ "I'll add tests later" → Tests are mandatory alongside implementation
+
+14. **Change model selection**
+    - ❌ Using gpt-4 instead of claude-3-5-sonnet-20241022 → Violates spec
+
+15. **Remove HITL interrupts**
+    - ❌ `interrupt_before=[]` → Spec requires `interrupt_before=["human_review"]`
+
+---
+
+## 12. What AI Agents MUST Do
+
+### Required Actions (Non-Negotiable)
+
+1. **Read specs before every code change**
+   - ✅ "Let me check specs/technical.md Section 6.1 for model selection"
+
+2. **Explain plan before implementation**
+   - ✅ "I will implement X by doing Y, which aligns with spec Section Z"
+
+3. **Wait for confirmation on ambiguous decisions**
+   - ✅ "The spec says X, but I'm unclear if this means Y. Can you clarify?"
+
+4. **Reference spec sections in code comments**
+   ```python
+   # Implements specs/technical.md Section 3.1 (Planner Node)
+   def planner_node(state: GlobalState) -> GlobalState:
+       ...
+   ```
+
+5. **Write tests alongside implementation**
+   - ✅ Create `src/chimera/agents/planner.py` AND `tests/agents/test_planner.py`
+
+6. **Update specs if requirements change (with approval)**
+   - ✅ "Requirements changed. Shall I update specs/functional.md Section 2.1 first?"
+
+7. **Use type hints everywhere (mypy strict mode)**
+   ```python
+   # ✅ CORRECT
+   def planner_node(state: GlobalState) -> GlobalState:
+       ...
+
+   # ❌ INCORRECT
+   def planner_node(state):  # No type hints
+       ...
+   ```
+
+8. **Handle errors explicitly (no bare except)**
+   ```python
+   # ✅ CORRECT
+   try:
+       result = await operation()
+   except NetworkError as e:
+       logger.error("network_error", error=str(e))
+       raise
+   except ValidationError as e:
+       logger.error("validation_error", error=str(e))
+       raise
+
+   # ❌ INCORRECT
+   try:
+       result = await operation()
+   except:  # Bare except
+       pass
+   ```
+
+9. **Log all agent actions to Tenx Sense**
+   - ✅ Every planner/worker/judge action logs to MCP Sense
+
+10. **Validate all inputs with Pydantic**
+    ```python
+    # ✅ CORRECT
+    request = TaskRequest(**user_input)  # Validates
+
+    # ❌ INCORRECT
+    goal = user_input["goal"]  # No validation
+    ```
+
+11. **Use conventional commit messages**
+    - ✅ `feat(planner): implement task decomposition (specs/technical.md §3.1)`
+
+12. **Check .gitignore before committing**
+    - ✅ Verify `.env` is excluded before `git commit`
+
+13. **Use environment variables for configuration**
+    - ✅ `model = os.getenv("PLANNER_MODEL", "claude-3-5-sonnet-20241022")`
+
+14. **Implement fallback strategies from spec**
+    - ✅ Primary model fails → retry → fallback to gpt-4o-mini (per spec)
+
+15. **Document traceability**
+    - ✅ Every commit references spec section
+    - ✅ Every function has docstring referencing spec
+
+---
+
+## 13. Conflict Resolution
+
+### Decision Matrix
+
+| Conflict Type | Resolution | Example |
+|---------------|------------|---------|
+| Spec ↔ SRS | Ask human | "Spec says X, SRS says Y. Which is correct?" |
+| Code ↔ Spec | Spec wins, update code | "Code uses gpt-4, spec says claude. Updating code." |
+| Test ↔ Spec | Spec wins, update test | "Test expects 0.80, spec says 0.90. Updating test." |
+| AI ↔ Spec | Spec wins, discard AI suggestion | "I suggested X, but spec says Y. Following spec." |
+| Spec ↔ Spec | Ask human | "functional.md says X, technical.md says Y. Conflict?" |
+
+### When to STOP and Ask Human
+
+**STOP immediately if:**
+1. Spec is ambiguous or unclear
+2. Spec is missing for required functionality
+3. Spec conflicts with SRS
+4. Spec conflicts with itself
+5. Implementation seems impossible per spec
+6. You're unsure if change requires spec update
+7. You discover a potential security issue
+8. You find a critical bug in spec
+9. Human asks you to do something that violates spec
+10. **When in doubt, STOP and ask**
+
+**Template for asking:**
+```
+🚨 STOP: Spec Ambiguity Detected
+
+Issue: specs/technical.md Section 6.3 specifies max_tokens=1000, but the example
+prompt in Section 6.2 is 1200 tokens, which would exceed the limit.
+
+Question: Should I:
+A) Reduce prompt size to fit 1000 tokens
+B) Increase max_tokens in spec to 1500
+C) Something else
+
+I cannot proceed without clarification.
+```
+
+---
+
+## 14. Repository Navigation Guide
+
+### Quick Reference
+
+**Before implementing Planner agent:**
+1. Read `specs/functional.md` Section 2.1 (Planner responsibilities)
+2. Read `specs/technical.md` Section 3.1 (planner_node implementation)
+3. Read `specs/technical.md` Section 6.2 (Planner prompt template)
+4. Read `specs/_meta.md` ADR-001 (Why Planner-Worker-Judge)
+
+**Before implementing Pydantic schemas:**
+1. Read `specs/technical.md` Section 2 (all schemas)
+2. Read `specs/functional.md` Section 5.1 (GlobalState requirements)
+3. Check `pyproject.toml` for pydantic version
+
+**Before implementing MCP integration:**
+1. Read `specs/technical.md` Section 5 (MCP configuration)
+2. Read `specs/functional.md` Section 4 (MCP requirements)
+3. Check `.vscode/mcp.json` for Tenx Sense config
+4. Read `specs/_meta.md` ADR-005 (MCP vs A2A boundaries)
+
+**Before implementing HITL:**
+1. Read `specs/functional.md` Section 3 (HITL workflow)
+2. Read `specs/technical.md` Section 3.3 (HITL interrupts)
+3. Read `specs/_meta.md` Section 4.3 (HITL is non-negotiable)
+
+### File Purpose Summary
+
+| File | Purpose | When to Read |
+|------|---------|--------------|
+| `specs/_meta.md` | ADRs, governance, constraints | Before making architectural decisions |
+| `specs/functional.md` | Behavioral contracts, acceptance criteria | Before implementing agent logic |
+| `specs/technical.md` | Schemas, APIs, implementation details | Before writing any code |
+| `pyproject.toml` | Dependencies, tool configuration | Before adding imports |
+| `.env.example` | Configuration template | Before using environment variables |
+| `README.md` | Project overview | For context |
+| `.gitignore` | Excluded files | Before committing |
+
+---
+
+## 15. Common Pitfalls to Avoid
+
+### Anti-Patterns (Learn from These Mistakes)
+
+#### Pitfall 1: "I'll just add this small feature"
+**Scenario:** AI sees an opportunity to add helpful functionality not in spec.
+
+**❌ WRONG:**
+```python
+# AI adds caching without spec approval
+@lru_cache(maxsize=100)
+def planner_node(state: GlobalState) -> GlobalState:
+    ...
+```
+
+**✅ CORRECT:**
+```
+AI: "I notice planner_node is called repeatedly with similar inputs. Should I propose
+adding caching to specs/technical.md Section 3.1?"
+Human: "No, premature optimization. Stick to spec."
+AI: "Understood. Implementing without caching as specified."
+```
+
+---
+
+#### Pitfall 2: "This validation seems excessive"
+**Scenario:** Spec requires validation that AI thinks is unnecessary.
+
+**❌ WRONG:**
+```python
+# AI skips validation because "goal is always valid"
+def planner_node(state: GlobalState) -> GlobalState:
+    goal = state.goal  # No validation
+    ...
+```
+
+**✅ CORRECT:**
+```python
+# AI implements validation exactly as specified
+def planner_node(state: GlobalState) -> GlobalState:
+    # specs/technical.md Section 2.1 requires goal validation
+    if not (10 <= len(state.goal) <= 500):
+        raise ValidationError("Goal must be 10-500 characters")
+    ...
+```
+
+---
+
+#### Pitfall 3: "Let me optimize this"
+**Scenario:** AI sees inefficient code and wants to optimize.
+
+**❌ WRONG:**
+```python
+# AI changes sequential to parallel without spec approval
+async def process_tasks(tasks):
+    results = await asyncio.gather(*[worker_node(t) for t in tasks])
+```
+
+**✅ CORRECT:**
+```
+AI: "The current implementation processes tasks sequentially (specs/technical.md §3.1).
+This could be parallelized for better performance. Should I propose a spec update?"
+Human: "No, sequential is intentional for Phase 1. Parallel is Phase 2."
+AI: "Understood. Keeping sequential as specified."
+```
+
+---
+
+#### Pitfall 4: "I'll use a different model"
+**Scenario:** AI thinks a different LLM model would work better.
+
+**❌ WRONG:**
+```python
+# AI uses gpt-4 instead of specified model
+response = completion(
+    model="gpt-4",  # "Better for planning tasks"
+    messages=[...]
+)
+```
+
+**✅ CORRECT:**
+```python
+# AI uses exact model from spec
+response = completion(
+    model=os.getenv("PLANNER_MODEL", "claude-3-5-sonnet-20241022"),  # From specs/technical.md §6.1
+    messages=[...]
+)
+```
+
+---
+
+#### Pitfall 5: "I'll skip the test for now"
+**Scenario:** AI wants to implement feature quickly and add tests later.
+
+**❌ WRONG:**
+```
+AI: "I've implemented planner_node. I'll add tests in the next commit."
+```
+
+**✅ CORRECT:**
+```
+AI: "I'm implementing planner_node. I will create both:
+1. src/chimera/agents/planner.py
+2. tests/agents/test_planner.py
+in the same commit, as required by Section 9."
+```
+
+---
+
+#### Pitfall 6: "I'll hardcode this temporarily"
+**Scenario:** AI wants to hardcode a value for quick testing.
+
+**❌ WRONG:**
+```python
+# AI hardcodes for "temporary" testing
+REDIS_URL = "redis://localhost:6379/0"  # "Just for testing"
+```
+
+**✅ CORRECT:**
+```python
+# AI uses environment variable from the start
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+```
+
+---
+
+#### Pitfall 7: "I'll assume this edge case won't happen"
+**Scenario:** AI skips error handling for "unlikely" scenarios.
+
+**❌ WRONG:**
+```python
+# AI assumes MCP call always succeeds
+result = await mcp_client.call_tool("tenx_log_action", params)
+# No error handling
+```
+
+**✅ CORRECT:**
+```python
+# AI implements error handling per specs/technical.md §5.4
+try:
+    result = await mcp_client.call_tool("tenx_log_action", params)
+except NetworkError:
+    await asyncio.sleep(2)  # Retry with backoff
+    result = await mcp_client.call_tool("tenx_log_action", params)
+except AuthError:
+    logger.error("MCP auth failed")
+    raise
+```
+
+---
+
+## 16. Emergency Procedures
+
+### When to STOP Immediately
+
+**STOP and ask human if:**
+
+1. **Spec is ambiguous**
+   ```
+   Example: "specs/technical.md §6.3 says max_tokens=1000, but the example prompt
+   is 1200 tokens. Which is correct?"
+   ```
+
+2. **Spec is missing**
+   ```
+   Example: "I need to implement error recovery for Worker failures, but I don't
+   see this in specs/technical.md §3. Should I propose adding it?"
+   ```
+
+3. **Spec conflicts with SRS**
+   ```
+   Example: "specs/functional.md §2.3 says confidence > 0.90 auto-approves, but
+   SRS NFR 1.1 says > 0.95. Which is authoritative?"
+   ```
+
+4. **Spec conflicts with itself**
+   ```
+   Example: "specs/functional.md §3.1 says HITL timeout is 24h, but
+   specs/technical.md §7.3 says 48h. Which is correct?"
+   ```
+
+5. **Implementation seems impossible**
+   ```
+   Example: "specs/technical.md §6.3 requires max_tokens=1000, but the prompt
+   template in §6.2 is 1500 tokens. This is impossible to implement."
+   ```
+
+6. **Unsure if change requires spec update**
+   ```
+   Example: "I want to add a helper function for parsing LLM output. Does this
+   require a spec update, or is it an implementation detail?"
+   ```
+
+7. **Potential security issue**
+   ```
+   Example: "The spec says to log all MCP calls, but this would log API keys.
+   Should I redact sensitive data?"
+   ```
+
+8. **Critical bug in spec**
+   ```
+   Example: "specs/technical.md §2.1 defines GlobalState.status as Literal['planning',
+   'executing'], but §5.2 references status='reviewing' which isn't in the Literal.
+   This is a spec bug."
+   ```
+
+9. **Human asks to violate spec**
+   ```
+   Example:
+   Human: "Skip the HITL interrupt for now, it's slowing down testing."
+   AI: "🚨 STOP: This violates specs/technical.md §3.3 which requires
+   interrupt_before=['human_review']. Should I propose a spec change first?"
+   ```
+
+10. **When in doubt**
+    ```
+    If you're unsure about ANYTHING, STOP and ask.
+    Better to ask 100 questions than make 1 wrong assumption.
+    ```
+
+### Emergency Stop Template
+
+```
+🚨 EMERGENCY STOP 🚨
+
+Category: [Spec Ambiguity | Spec Missing | Spec Conflict | Security Issue | Other]
+
+Issue: [Detailed description of the problem]
+
+Spec Reference: [specs/file.md Section X.Y]
+
+Question: [Specific question for human]
+
+I cannot proceed safely without clarification.
+```
+
+---
+
+## 17. Success Criteria for AI Agents
+
+### How to Know You're Doing It Right
+
+**✅ You're compliant if:**
+
+1. **Every code change references a spec section**
+   - Commit message: `feat(planner): implement task decomposition (specs/technical.md §3.1)`
+   - Code comment: `# Implements specs/functional.md §2.1 (Planner input contract)`
+
+2. **Every commit message follows conventional commits**
+   - Format: `<type>(<scope>): <subject> (specs/file.md §X.Y)`
+   - Types: feat, fix, docs, test, refactor, chore
+
+3. **Every function has type hints**
+   ```python
+   def planner_node(state: GlobalState) -> GlobalState:  # ✅ Type hints present
+   ```
+
+4. **Every external input is validated**
+   ```python
+   request = TaskRequest(**user_input)  # ✅ Pydantic validation
+   ```
+
+5. **Every error is handled explicitly**
+   ```python
+   try:
+       result = await operation()
+   except SpecificError as e:  # ✅ Specific exception, not bare except
+       logger.error("error_type", error=str(e))
+       raise
+   ```
+
+6. **Every agent action is logged**
+   ```python
+   await log_to_tenx(session_id, "planner_start", {...})  # ✅ Tenx Sense logging
+   ```
+
+7. **Zero secrets in version control**
+   - `git log -p | grep -i "api_key"` returns nothing
+   - `.env` is in `.gitignore`
+
+8. **100% spec compliance**
+   - No features not in spec
+   - No deviations from spec
+   - No "improvements" without spec update
+
+### Self-Check Questions
+
+**Before committing code, ask yourself:**
+
+- [ ] Did I read the relevant spec section?
+- [ ] Does my implementation match the spec exactly?
+- [ ] Did I add any features not in the spec?
+- [ ] Did I write tests alongside implementation?
+- [ ] Did I use type hints everywhere?
+- [ ] Did I validate all external inputs?
+- [ ] Did I handle all errors explicitly?
+- [ ] Did I log all agent actions to Tenx Sense?
+- [ ] Did I check for secrets before committing?
+- [ ] Did I reference the spec in my commit message?
+
+**If any answer is "No", STOP and fix before committing.**
+
+---
+
+## 18. Appendix: Quick Reference
+
+### Spec Section Lookup
+
+| Task | Spec Reference |
+|------|----------------|
+| Implement Planner | specs/functional.md §2.1, specs/technical.md §3.1, §6.2 |
+| Implement Worker | specs/functional.md §2.2, specs/technical.md §3.1 |
+| Implement Judge | specs/functional.md §2.3, specs/technical.md §3.1, §6.2 |
+| Define Pydantic schemas | specs/technical.md §2 |
+| Configure LangGraph | specs/technical.md §3 |
+| Integrate MCP | specs/technical.md §5, specs/functional.md §4 |
+| Configure LLM providers | specs/technical.md §6 |
+| Implement HITL | specs/functional.md §3, specs/technical.md §3.3 |
+| Write tests | specs/technical.md §9 |
+| Set up observability | specs/technical.md §10 |
+
+### Environment Variables
+
+| Variable | Purpose | Spec Reference |
+|----------|---------|----------------|
+| `TENX_MCP_URL` | Tenx Sense endpoint | specs/technical.md §5.1 |
+| `TENX_API_KEY` | Tenx authentication | specs/technical.md §5.1 |
+| `ANTHROPIC_API_KEY` | Claude API access | specs/technical.md §6.1 |
+| `OPENAI_API_KEY` | GPT API access | specs/technical.md §6.1 |
+| `GOOGLE_API_KEY` | Gemini API access | specs/technical.md §6.1 |
+| `REDIS_URL` | Redis connection | specs/technical.md §4.1 |
+| `PLANNER_MODEL` | Planner LLM model | specs/technical.md §6.1 |
+| `WORKER_MODEL` | Worker LLM model | specs/technical.md §6.1 |
+| `JUDGE_MODEL` | Judge LLM model | specs/technical.md §6.1 |
+
+### HITL Thresholds (HARDCODED)
+
+| Confidence | Action | Spec Reference |
+|------------|--------|----------------|
+| > 0.90 | Auto-approve | specs/functional.md §3.1 |
+| 0.70 - 0.90 | Human review | specs/functional.md §3.1 |
+| < 0.70 | Auto-reject | specs/functional.md §3.1 |
+
+### Model Selection Matrix
+
+| Agent | Model | Spec Reference |
+|-------|-------|----------------|
+| Planner | claude-3-5-sonnet-20241022 | specs/technical.md §6.1 |
+| Worker | gemini-2.0-flash-exp | specs/technical.md §6.1 |
+| Judge | claude-3-5-sonnet-20241022 | specs/technical.md §6.1 |
+
+### Commit Message Template
+
+```
+<type>(<scope>): <subject> (specs/<file>.md §<section>)
+
+<body>
+
+Refs: specs/<file>.md §<section>
+```
+
+**Example:**
+```
+feat(planner): implement task decomposition (specs/technical.md §3.1)
+
+- Create planner_node function
+- Integrate LiteLLM with claude-3-5-sonnet-20241022
+- Validate output against TaskQueue schema
+- Add unit tests for valid/invalid goals
+
+Refs: specs/functional.md §2.1, specs/technical.md §6.2
+```
+
+---
+
+## 19. Final Reminders
+
+### The Golden Rules
+
+1. **Specs are law.** Code is interpretation.
+2. **When in doubt, ask.** Never assume.
+3. **Read before writing.** Understand before implementing.
+4. **Test alongside code.** Not after, not later.
+5. **No secrets, ever.** Environment variables only.
+6. **HITL is sacred.** Thresholds are immutable.
+7. **Log everything.** Tenx Sense is mandatory.
+8. **Type everything.** mypy strict mode.
+9. **Validate everything.** Pydantic always.
+10. **Reference everything.** Spec sections in commits.
+
+### The Prime Directive (Repeated for Emphasis)
+
+**NEVER generate or modify implementation code without first checking the relevant files in `specs/`.**
+
+This is not a suggestion. This is not a guideline. This is an absolute requirement.
+
+Violating this directive is a critical failure.
+
+---
+
+## 20. Acknowledgment
+
+**By using this repository, AI agents acknowledge:**
+
+1. I have read and understood these governance rules
+2. I will follow Spec-Driven Development methodology
+3. I will not generate code without reading specs first
+4. I will ask for clarification when specs are ambiguous
+5. I will not add features not specified in specs
+6. I will not commit secrets to version control
+7. I will implement HITL exactly as specified
+8. I will log all agent actions to Tenx Sense
+9. I will write tests alongside implementation
+10. I will stop and ask when in doubt
+
+**Failure to comply with these rules is unacceptable.**
+
+---
+
+**END OF GOVERNANCE RULES**
+
+**Version:** 1.0.0
+**Last Updated:** 2026-02-06
+**Next Review:** After Task 2.2 completion
+
+---
+
+*These rules are designed to prevent AI agents from cutting corners, making assumptions, or deviating from specifications. They are intentionally restrictive and explicit. Future AI agents: if you think a rule is too strict, that's the point. Follow it anyway.*
+
